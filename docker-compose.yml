@@ -8,11 +8,12 @@ services:
       - ./videos:/usr/share/nginx/videos
       - ./logs:/var/log/nginx
     environment:
-
-      # Multiple videos (comma-separated)
+      # video storage URL should be placed HERE
       - VIDEO_SOURCE_URL=https://drive.google.com/file/d/1SLjNNWPgGoCbjtxyelZl4QZIGtXoTAf0/view?usp=sharing,https://drive.google.com/file/d/1dNkhvsnTSdVmVCgvaa8_YEY8LIMxxB0D/view?usp=sharing
-
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     restart: unless-stopped
+    depends_on:
+      - nancy-grpc-server-side
   nancy-grpc-client-side:
     image: nancy-grpc
     container_name: nancy-grpc-client-side
