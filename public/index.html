@@ -143,6 +143,10 @@
             font-size: 9px;
             color: #666;
         }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -177,28 +181,36 @@
                     <div class="graph-y-axis" id="bitrateAxis"></div>
                     <div class="label">Real-time (last 60 points)</div>
                 </div>
-                <div class="graph-container" id="bufferGraph">
-                    <div class="graph-title">Buffer Level (%)</div>
-                    <div class="graph-y-axis" id="bufferAxis"></div>
-                    <div class="label">Real-time (last 60 points)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Video Duration</div>
-                    <div class="stat-value" id="videoDuration">0:00</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Buffer Events</div>
-                    <div class="stat-value" id="bufferEvents">0</div>
-                </div>
-                <div class="graph-container fps-graph" id="fpsGraph">
-                    <div class="graph-title">Frame Rate (estimated fps)</div>
-                    <div class="graph-y-axis" id="fpsAxis"></div>
-                    <div class="label">Real-time monitoring</div>
-                </div>
-                <div class="graph-container latency-graph" id="latencyGraph">
-                    <div class="graph-title">Playback Latency</div>
-                    <div class="latency-value" id="latencyValue">Calculating...</div>
-                    <div class="label">Time to first frame (ms)</div>
+                
+                <div class="metrics-grid">
+                    <div class="graph-container" id="bitrateGraph">
+                        <div class="graph-title">Bitrate History (kbps)</div>
+                        <div class="graph-y-axis" id="bitrateAxis"></div>
+                        <div class="label">Real-time (last 60 points)</div>
+                    </div>
+                    <div class="graph-container" id="bufferGraph">
+                        <div class="graph-title">Buffer Level (%)</div>
+                        <div class="graph-y-axis" id="bufferAxis"></div>
+                        <div class="label">Real-time (last 60 points)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Video Duration</div>
+                        <div class="stat-value" id="videoDuration">0:00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Buffer Events</div>
+                        <div class="stat-value" id="bufferEvents">0</div>
+                    </div>
+                    <div class="graph-container fps-graph" id="fpsGraph">
+                        <div class="graph-title">Frame Rate (estimated fps)</div>
+                        <div class="graph-y-axis" id="fpsAxis"></div>
+                        <div class="label">Real-time monitoring</div>
+                    </div>
+                    <div class="graph-container latency-graph" id="latencyGraph">
+                        <div class="graph-title">Playback Latency</div>
+                        <div class="latency-value" id="latencyValue">Calculating...</div>
+                        <div class="label">Time to first frame (ms)</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -350,9 +362,31 @@
         .then(data => {
             console.log('use_case_request', data);
             grantService = data;
+            
+            // Hide loading indicator
+            document.getElementById('loadingIndicator').style.display = 'none';
+            
+            // Check if access is granted
+            if (grantService === true) {
+                // Show video player and hide access denied message
+                document.getElementById('videoContainer').style.display = 'block';
+                document.getElementById('accessDeniedMessage').style.display = 'none';
+                console.log('Access granted - Video player enabled');
+            } else {
+                // Hide video player and show access denied message
+                document.getElementById('videoContainer').style.display = 'none';
+                document.getElementById('accessDeniedMessage').style.display = 'block';
+                console.log('Access denied - Video player disabled');
+            }
         })
         .catch(error => {
             console.error('Error in fetch chain:', error);
+            // Hide loading indicator
+            document.getElementById('loadingIndicator').style.display = 'none';
+            // Show error message in case of any fetch failure
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('accessDeniedMessage').style.display = 'block';
+            document.getElementById('accessDeniedMessage').innerHTML = '<h2>Error</h2><p>Failed to verify credentials: ' + error.message + '</p>';
         });
 
         const videoPlayer = document.getElementById('videoPlayer');
