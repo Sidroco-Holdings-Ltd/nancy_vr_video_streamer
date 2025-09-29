@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nancy-vr-video-streamer.fullname" . }}-video-server
+  labels:
+    {{- include "nancy-vr-video-streamer.labels" . | nindent 4 }}
+    app.kubernetes.io/component: video-server
+spec:
+  replicas: {{ .Values.videoServer.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nancy-vr-video-streamer.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: video-server
+  template:
+    metadata:
+      labels:
+        {{- include "nancy-vr-video-streamer.labels" . | nindent 8 }}
+        app.kubernetes.io/component: video-server
+    spec:
+      serviceAccountName: {{ include "nancy-vr-video-streamer.serviceAccountName" . }}
+      containers:
+        - name: video-server
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.videoServer.image.repository }}:{{ .Values.videoServer.image.tag | default .Chart.AppVersion }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.videoServer.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: VIDEO_SOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "nancy-vr-video-streamer.fullname" . }}-config
+                  key: video-source-url
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.videoServer.resources | nindent 12 }}
+          volumeMounts:
+            - name: videos-storage
+              mountPath: /usr/share/nginx/videos
+            - name: logs-storage
+              mountPath: /var/log/nginx
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: nginx.conf
+      volumes:
+        - name: videos-storage
+          persistentVolumeClaim:
+            claimName: {{ include "nancy-vr-video-streamer.fullname" . }}-videos-pvc
+        - name: logs-storage
+          persistentVolumeClaim:
+            claimName: {{ include "nancy-vr-video-streamer.fullname" . }}-logs-pvc
+        - name: nginx-config
+          configMap:
+            name: {{ include "nancy-vr-video-streamer.fullname" . }}-nginx-config

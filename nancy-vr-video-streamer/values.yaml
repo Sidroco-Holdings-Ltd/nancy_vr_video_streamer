@@ -1,0 +1,75 @@
+# Default values for nancy-vr-video-streamer
+global:
+  imageRegistry: ghcr.io/sidroco-holdings-ltd
+  
+# Video Server Configuration
+videoServer:
+  replicaCount: 1
+  image:
+    repository: nancy-video-server
+    tag: "latest"
+  service:
+    port: 80
+    targetPort: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# gRPC Services Configuration
+grpcServices:
+  # Common settings for all gRPC services
+  image:
+    repository: nancy-grpc
+    tag: "latest"
+  
+  # Client-side gRPC service (matches docker-compose nancy-grpc-client-side)
+  client:
+    enabled: true
+    replicaCount: 1
+    service:
+      port: 8000
+      targetPort: 8000
+    env:
+      GRPC_PORT: "50001"
+      API_TITLE: "DLT Gateway REST API client-side"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  
+  # Server-side gRPC service (matches docker-compose nancy-grpc-server-side)
+  server:
+    enabled: true
+    replicaCount: 1
+    service:
+      port: 8000
+      targetPort: 8000
+    env:
+      GRPC_PORT: "50000"
+      API_TITLE: "DLT Gateway REST API server-side"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# Persistent Volume Claims
+persistence:
+  videos:
+    size: 10Gi
+  logs:
+    size: 1Gi
+
+# ConfigMap values
+config:
+  videoSourceUrl: "https://uowmgr.sharepoint.com/sites/NANCYSNS/Shared%20Documents/Forms/AllItems.aspx?csf=1&web=1&e=9l7Cnw&CID=cf78c6e9%2D706c%2D4bf0%2D9884%2D2d5f83cafb23&FolderCTID=0x01200053EB8F180A2D9D478BF33876209664C5&id=%2Fsites%2FNANCYSNS%2FShared%20Documents%2FWP6%20NANCY%20System%20Integration%2C%20Validation%20and%20Demo%2FGreek%20Outdoor%20Testbed%2FVR%20videos"
+  grpcHost: "10.10.10.40"

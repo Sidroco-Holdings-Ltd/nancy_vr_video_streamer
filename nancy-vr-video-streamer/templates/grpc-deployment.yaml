@@ -1,0 +1,60 @@
+{{- range $service, $config := .Values.grpcServices }}
+{{- if and (ne $service "image") $config.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nancy-vr-video-streamer.fullname" $ }}-grpc-{{ $service }}
+  labels:
+    {{- include "nancy-vr-video-streamer.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: grpc-{{ $service }}
+spec:
+  replicas: {{ $config.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nancy-vr-video-streamer.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: grpc-{{ $service }}
+  template:
+    metadata:
+      labels:
+        {{- include "nancy-vr-video-streamer.labels" $ | nindent 8 }}
+        app.kubernetes.io/component: grpc-{{ $service }}
+    spec:
+      serviceAccountName: {{ include "nancy-vr-video-streamer.serviceAccountName" $ }}
+      containers:
+        - name: grpc-{{ $service }}
+          image: "{{ $.Values.global.imageRegistry }}/{{ $.Values.grpcServices.image.repository }}:{{ $.Values.grpcServices.image.tag | default $.Chart.AppVersion }}"
+          ports:
+            - name: http
+              containerPort: {{ $config.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: GRPC_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "nancy-vr-video-streamer.fullname" $ }}-config
+                  key: grpc-host
+            - name: GRPC_PORT
+              value: {{ $config.env.GRPC_PORT | quote }}
+            - name: UVICORN_HOST
+              value: "0.0.0.0"
+            - name: UVICORN_PORT
+              value: "8000"
+            - name: API_TITLE
+              value: {{ $config.env.API_TITLE | quote }}
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: http
+            initialDelaySeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: http
+            initialDelaySeconds: 10
+          resources:
+            {{- toYaml $config.resources | nindent 12 }}
+{{- end }}
+{{- end }}

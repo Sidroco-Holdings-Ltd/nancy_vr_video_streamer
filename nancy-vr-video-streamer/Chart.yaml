@@ -1,0 +1,16 @@
+apiVersion: v2
+name: nancy-vr-video-streamer
+description: A minimal Helm chart for NANCY VR Video Streaming Server with gRPC services
+type: application
+version: 0.2.0
+appVersion: "latest"
+
+maintainers:
+  - name: Sidroco Holdings Ltd
+    email: info@sidroco.com
+
+keywords:
+  - video-streaming
+  - vr
+  - nginx
+  - grpc

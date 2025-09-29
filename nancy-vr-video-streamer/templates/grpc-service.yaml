@@ -1,0 +1,22 @@
+{{- range $service, $config := .Values.grpcServices }}
+{{- if and (ne $service "image") $config.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nancy-vr-video-streamer.fullname" $ }}-grpc-{{ $service }}
+  labels:
+    {{- include "nancy-vr-video-streamer.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: grpc-{{ $service }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ $config.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "nancy-vr-video-streamer.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: grpc-{{ $service }}
+{{- end }}
+{{- end }}

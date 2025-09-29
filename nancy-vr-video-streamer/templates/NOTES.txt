@@ -1,0 +1,39 @@
+🎥 NANCY VR Video Streaming Server has been deployed successfully!
+
+📋 Services deployed:
+  ✓ Video Server - Streaming interface and video serving
+  ✓ gRPC Client - REST API client-side interface
+  ✓ gRPC Server - REST API server-side interface
+
+🔗 Access your application:
+
+1. Via Port Forward (for testing/development):
+   kubectl --namespace {{ .Release.Namespace }} port-forward service/{{ include "nancy-vr-video-streamer.fullname" . }}-video-server 8080:80
+   
+   Then open: http://localhost:8080
+
+2. API Services:
+   gRPC Client API: kubectl --namespace {{ .Release.Namespace }} port-forward service/{{ include "nancy-vr-video-streamer.fullname" . }}-grpc-client 8000:8000
+   Access at: http://localhost:8000/docs
+   
+   gRPC Server API: kubectl --namespace {{ .Release.Namespace }} port-forward service/{{ include "nancy-vr-video-streamer.fullname" . }}-grpc-server 8001:8000
+   Access at: http://localhost:8001/docs
+
+📊 Monitoring and Management:
+
+1. Check deployment status:
+   kubectl get pods --namespace {{ .Release.Namespace }} -l app.kubernetes.io/name={{ include "nancy-vr-video-streamer.name" . }}
+
+2. View logs:
+   kubectl logs --namespace {{ .Release.Namespace }} -l app.kubernetes.io/component=video-server
+   kubectl logs --namespace {{ .Release.Namespace }} -l app.kubernetes.io/component=grpc-client
+   kubectl logs --namespace {{ .Release.Namespace }} -l app.kubernetes.io/component=grpc-server
+
+3. Check storage:
+   kubectl get pvc --namespace {{ .Release.Namespace }}
+
+📁 To upload videos:
+   Copy your MP4 files to the videos persistent volume or configure the VIDEO_SOURCE_URL in values.yaml
+
+🔧 Configuration:
+   Edit values in: helm upgrade {{ .Release.Name }} ./nancy-vr-video-streamer --set key=value

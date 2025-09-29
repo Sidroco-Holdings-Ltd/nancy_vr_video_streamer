@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nancy-vr-video-streamer.fullname" . }}-video-server
+  labels:
+    {{- include "nancy-vr-video-streamer.labels" . | nindent 4 }}
+    app.kubernetes.io/component: video-server
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.videoServer.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "nancy-vr-video-streamer.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: video-server
