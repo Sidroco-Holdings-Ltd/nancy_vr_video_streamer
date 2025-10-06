@@ -154,34 +154,42 @@
         <div class="nav">
             <h1>Video Streaming Server</h1>
         </div>
-        <div class="video-container">
-            <video id="videoPlayer" controls playsinline>
-                <source id="videoSource" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+        <!-- Loading indicator - Shown during authentication -->
+        <div id="loadingIndicator" style="text-align: center; padding: 20px; margin-bottom: 20px;">
+            <h2>Authenticating</h2>
+            <p>Please wait while we verify your credentials...</p>
+            <div class="spinner" style="margin: 20px auto; width: 40px; height: 40px; border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top-color: #4CAF50; animation: spin 1s linear infinite;"></div>
         </div>
-        <div>
-            <label for="videoSelect">Select Video:</label>
-            <select id="videoSelect" onchange="changeVideo()">
-                <option value="">Loading videos...</option>
-            </select>
+        
+        <!-- Access Denied Message - Hidden by default -->
+        <div id="accessDeniedMessage" style="display: none; text-align: center; padding: 20px; background-color: #ffebee; border-radius: 5px; margin-bottom: 20px;">
+            <h2>Access Denied</h2>
+            <p>You do not have permission to view this content. Please verify your credentials.</p>
         </div>
-
-        <div class="metrics">
-            <h3>Stream Analytics</h3>
-            <div id="streamInfo">
-                <p>Resolution: <span id="resolution">Loading...</span></p>
-                <p>Current Bitrate: <span id="bitrate">Calculating...</span></p>
-                <p>Buffered: <span id="buffered">0%</span></p>
+        
+        <!-- Video Container - Will be shown/hidden based on authorization -->
+        <div id="videoContainer" style="display: none;">
+            <div class="video-container">
+                <video id="videoPlayer" controls playsinline>
+                    <source id="videoSource" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div>
+                <label for="videoSelect">Select Video:</label>
+                <select id="videoSelect" onchange="changeVideo()">
+                    <option value="">Loading videos...</option>
+                </select>
             </div>
 
-            <div class="metrics-grid">
-                <div class="graph-container" id="bitrateGraph">
-                    <div class="graph-title">Bitrate History (kbps)</div>
-                    <div class="graph-y-axis" id="bitrateAxis"></div>
-                    <div class="label">Real-time (last 60 points)</div>
+            <div class="metrics">
+                <h3>Stream Analytics</h3>
+                <div id="streamInfo">
+                    <p>Resolution: <span id="resolution">Loading...</span></p>
+                    <p>Current Bitrate: <span id="bitrate">Calculating...</span></p>
+                    <p>Buffered: <span id="buffered">0%</span></p>
                 </div>
-                
+
                 <div class="metrics-grid">
                     <div class="graph-container" id="bitrateGraph">
                         <div class="graph-title">Bitrate History (kbps)</div>
