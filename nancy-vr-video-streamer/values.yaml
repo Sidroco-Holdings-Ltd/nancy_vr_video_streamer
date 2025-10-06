@@ -18,6 +18,20 @@ videoServer:
     requests:
       cpu: 100m
       memory: 128Mi
+  
+  # Health check configuration for video server
+  # The video server needs time to download videos before nginx starts
+  livenessProbe:
+    initialDelaySeconds: 120  # Wait 2 minutes before first check
+    periodSeconds: 30         # Check every 30 seconds
+    timeoutSeconds: 5         # Allow 5 seconds for response
+    failureThreshold: 3       # Allow 3 failures before restart
+  
+  readinessProbe:
+    initialDelaySeconds: 120  # Wait 2 minutes before first check
+    periodSeconds: 10         # Check every 10 seconds
+    timeoutSeconds: 5         # Allow 5 seconds for response
+    failureThreshold: 3       # Allow 3 failures before marking as not ready
 
 # gRPC Services Configuration
 grpcServices:
@@ -71,5 +85,5 @@ persistence:
 
 # ConfigMap values
 config:
-  videoSourceUrl: "https://uowmgr.sharepoint.com/sites/NANCYSNS/Shared%20Documents/Forms/AllItems.aspx?csf=1&web=1&e=9l7Cnw&CID=cf78c6e9%2D706c%2D4bf0%2D9884%2D2d5f83cafb23&FolderCTID=0x01200053EB8F180A2D9D478BF33876209664C5&id=%2Fsites%2FNANCYSNS%2FShared%20Documents%2FWP6%20NANCY%20System%20Integration%2C%20Validation%20and%20Demo%2FGreek%20Outdoor%20Testbed%2FVR%20videos"
+  videoSourceUrl: "https://drive.google.com/file/d/1SLjNNWPgGoCbjtxyelZl4QZIGtXoTAf0/view?usp=sharing,https://drive.google.com/file/d/1dNkhvsnTSdVmVCgvaa8_YEY8LIMxxB0D/view?usp=sharing"
   grpcHost: "10.10.10.40"

@@ -35,10 +35,18 @@ spec:
             httpGet:
               path: /
               port: http
+            initialDelaySeconds: {{ .Values.videoServer.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.videoServer.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.videoServer.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.videoServer.livenessProbe.failureThreshold }}
           readinessProbe:
             httpGet:
               path: /
               port: http
+            initialDelaySeconds: {{ .Values.videoServer.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.videoServer.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.videoServer.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.videoServer.readinessProbe.failureThreshold }}
           resources:
             {{- toYaml .Values.videoServer.resources | nindent 12 }}
           volumeMounts:
